@@ -24,3 +24,5 @@ systemctl restart mongod
 VALIDATE $? "Restarted mongodb"
 
 print_total_time
+
+#gf
