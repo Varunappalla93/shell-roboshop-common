@@ -15,6 +15,7 @@ SCRIPT_DIR=$PWD
 
 START_TIME=$(date +%s)
 MONGODB_HOST=mongodb.vardevops.online
+MYSQL_HOST=mysql.vardevops.online
 
 mkdir -p $LOGS_FOLDER
 
@@ -54,6 +55,20 @@ nodejs_setup()
     VALIDATE $? "Install dependencies"
 }
 
+java_setup()
+{
+    dnf install maven -y &>>$LOGS_FILE
+    VALIDATE $? "Installing Maven"
+
+    mvn clean package &>>$LOGS_FILE
+    VALIDATE $? "Installing and Building $app_name"
+
+
+    mv target/$app_name-1.0.jar $app_name.jar 
+    VALIDATE $? "Moving and Renaming $app_name"
+}
+
+
 app_setup()
 {
     id roboshop &>>$LOGS_FILE
@@ -83,7 +98,7 @@ app_setup()
 systemd_setup()
 {
     cp $SCRIPT_DIR/$app_name.service /etc/systemd/system/$app_name.service
-    VALIDATE $? "Created systemctl catalogue service"
+    VALIDATE $? "Created systemctl $app_name service"
 
     systemctl daemon-reload
     VALIDATE $? "daemon reload"
